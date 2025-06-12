@@ -20,7 +20,7 @@ class ListingSerializer(serializers.ModelSerializer):
 
 class BookingSerializer(serializers.ModelSerializer):
 
-    listing = ListingSerializer(many=True, read_only=True)
+    listing = ListingSerializer(read_only=True)
 
     class Meta:
         model = Booking
