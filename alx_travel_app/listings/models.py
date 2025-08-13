@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 
 
@@ -57,11 +57,21 @@ class Booking(models.Model):
     num_of_traveler = models.PositiveIntegerField(null=False)
     check_in = models.DateTimeField() #start_date
     check_out = models.DateTimeField() #end_date
-    total_price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
+    #total_price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     status = models.CharField(max_length=10, choices=BookingChoice.choices, default=BookingChoice.PENDING)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-created_at']
     
+    @property
+    def total_price(self):
+        num_of_nights = (self.check_out.date() - self.check_in.date()).days
+        if num_of_nights < 1:
+            num_of_nights = 1
+        return float(self.listing.price_per_night * num_of_nights)
+
+
     def __str__(self):
         return f' Booking {self.booking_id} by {self.traveler.username}'
 
